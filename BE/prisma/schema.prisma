@@ -1,0 +1,750 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  user_id         String   @id @unique @default(uuid())
+  user_email      String   @unique
+  user_password   String   @unique @default(uuid())
+  date_of_joining DateTime
+  user_name       String?
+  emp_id          Int?     @unique @default(autoincrement())
+
+  sick_leaves         Int   @default(0)
+  earned_leaves       Int   @default(0)
+  casual_leaves       Int   @default(0)
+  lapsed_leaves       Int   @default(0)
+  compunsatory_leaves Int   @default(0)
+  unpaid_leaves       Int   @default(0)
+  granted_leaves      Int   @default(0)
+  leaves_reset_values Json?
+  last_check_point    Int   @default(0)
+
+  date_of_birth    DateTime?
+  gender           GENDER?
+  salutation       SALUTAION?
+  status           STATUS_TYPE?      @default(Inactive)
+  employement_type EMPLOYEMENT_TYPE?
+
+  profile_photo  String?
+  firstname      String?
+  middlename     String?
+  lastname       String?
+  personal_email String?
+  phone_number String?
+  user_device_id String?  @unique
+  otp            String?
+  isApproved     Boolean? @default(false)
+
+  role_id    String?
+  company_id String
+
+  user_bank               Json?
+  user_address            Json?
+  user_permanent_address  Json?
+  user_documents          Json?
+  emergency_contacts_data Json[]
+
+  attendance Attendance[]
+  checkin    Checkin[]
+
+  payroll    Payroll?
+  user_shift User_shift[]
+  company    Company?     @relation(fields: [company_id], references: [company_id])
+  role       Role?        @relation(fields: [role_id], references: [role_id])
+
+  leave                Leave[]
+  complementary_leaves Complementary_Leave[]
+  user_holiday         User_holiday[]
+  notification         Notification[]
+  remark               Remark[]
+  requests              Requests[]
+  tickets              Tickets[]
+  docs                 userDocs[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("User")
+}
+
+model Company {
+  company_id           String        @id @unique @default(uuid())
+  company_name         String
+  company_address      String
+  company_details      String?
+  company_logo         String?
+  country              String?
+  currency             String?
+  users                User[]
+  company_data_history CompanyData[]
+  smtp_username   String?
+  smtp_password   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Company")
+}
+
+model CompanyData {
+  companydata_id          String       @id @unique @default(uuid())
+  company_id              String
+  ot_pay_type             OT_PAY_TYPE?
+  standarized_shift_hours Int?
+  standard_monthly_days   Int?
+  min_half_day_hours      Int?
+  payment_day_of_month    Int?  @default(30)
+  salary_freq             SALARY_TYPE  @default(Monthly)
+  from_date               DateTime?
+  end_date                DateTime?
+
+  company Company @relation(fields: [company_id], references: [company_id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Company_Data")
+}
+
+model Role {
+  role_id         String            @id @unique @default(uuid())
+  role_name       String
+  role_permission Role_permission[]
+  users           User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Role")
+}
+
+model Role_permission {
+  role_permission_id String          @id @unique @default(uuid())
+  role_id            String
+  permission_flag_id String
+  permission_flag    Permission_flag @relation(fields: [permission_flag_id], references: [permission_flag_id])
+  role               Role            @relation(fields: [role_id], references: [role_id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Role_permission")
+}
+
+model Permission_flag {
+  permission_flag_id          String            @id @unique @default(uuid())
+  permission_flag_name        String
+  permission_flag_description String
+  role_permissions            Role_permission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Permission_flags")
+}
+
+model User_shift {
+  user_shift_id String            @unique @default(uuid())
+  shift_id      String
+  user_id       String
+  status        USER_SHIFT_STATUS @default(None)
+  shift         Shift             @relation(fields: [shift_id], references: [shift_id], onDelete: Cascade)
+  user          User              @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([user_id, shift_id])
+  @@map("User_shift")
+}
+
+model Shift {
+  shift_id          String       @id @unique @default(uuid())
+  shift_name        String
+  start_time        DateTime
+  end_time          DateTime
+  begin_checkin     Int
+  begin_checkout    Int
+  lunch_break_start DateTime?
+  lunch_break_end   DateTime?
+  shift_color       String?
+  auto_attendance   Boolean?
+  status            SHIFT_STATUS @default(Resolved)
+  client_id         String?
+  client            Client?      @relation(fields: [client_id], references: [client_id])
+  checkin           Checkin[]
+  user_shift        User_shift[]
+  attendance        Attendance[]
+  custom_repeat     String[]     @default([])
+
+  repeat              SHIFT_REPEAT @default(None)
+  parent_repeat_shift Boolean      @default(false)
+  repeat_id           String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Shift")
+}
+
+model Client {
+  client_id      String  @id @unique @default(uuid())
+  client_name    String
+  client_details String?
+  client_logo    String?
+
+  day_hour_payment   Int?
+  night_hour_payment Int?
+
+  day_hour_start   DateTime?
+  night_hour_start DateTime?
+
+  shift Shift[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Client")
+}
+
+model Checkin {
+  checkin_id    String      @id @unique @default(uuid())
+  user_id       String
+  shift_id      String?
+  attendance_id String?
+  log_type      LOG_TYPE
+  log_time      DateTime
+  device_id     String?
+  attendance    Attendance? @relation(fields: [attendance_id], references: [attendance_id])
+  shift         Shift?      @relation(fields: [shift_id], references: [shift_id])
+  user          User        @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Checkin")
+}
+
+model Attendance {
+  attendance_id   String          @id @unique @default(uuid())
+  attendance_date DateTime
+  user_id         String
+  status          ATTENDANCE_TYPE
+  shift_id        String?
+  check_in_id     String?
+  check_out_id    String?
+  shift           Shift?          @relation(fields: [shift_id], references: [shift_id])
+  checkin         Checkin[]
+  user            User            @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  ot_hours        Int?
+  attendance_hours        Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Attendance")
+}
+
+model Leave {
+  leave_id          String       @id @unique @default(uuid())
+  leave_name        String
+  leave_description String?
+  leave_type        LEAVE_TYPE?
+  leave_status      LEAVE_STATUS?
+  leave_start_date  DateTime?
+  leave_end_date    DateTime?
+  user_id           String
+  user              User         @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  trans_status      TRANS_STATUS  @default(DEBIT)
+  credit_amt        Int?
+  debit_amt         Int?
+  trans_expiry      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Leave")
+}
+
+model Complementary_Leave {
+  comp_leave_id String @id @unique @default(uuid())
+  user_id       String
+
+  no_of_leaves   Int
+  salary_slip_id String
+  expired_At     DateTime
+  remaining_extra_hours Int
+
+  user        User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  salary_slip SalarySlip @relation(fields: [salary_slip_id], references: [salary_slip_id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Complementary_Leave")
+}
+
+model Holiday {
+  holiday_id    String         @id @unique @default(uuid())
+  holiday_name  String
+  holiday_date  DateTime
+  end_date      DateTime?
+  holiday_type  HOLIDAY_TYPE
+  user_holiday  User_holiday[]
+  custom_repeat String[]       @default([])
+
+  parent_holiday Boolean  @default(false)
+  status         String?  @default("Normal")
+  repeatId       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("Holiday")
+}
+
+model User_holiday {
+  user_holiday_id String  @unique @default(uuid())
+  user_id         String
+  holiday_id      String
+  user            User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  holiday         Holiday @relation(fields: [holiday_id], references: [holiday_id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([user_id, holiday_id])
+  @@map("User_holiday")
+}
+
+model Payroll {
+  payroll_id String @id @unique @default(uuid())
+  user_id    String @unique
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  payroll_status     PAYROLL_STATUS     @default(Inactive)
+  payroll_start_date DateTime?
+  payroll_frequency  PAYROLL_FREQUENCY?  @default(Monthly)
+
+  salary      SalaryStructure[]
+  salary_slip SalarySlip[]
+  bonus       Bonus[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Payroll")
+}
+
+
+model Bonus {
+  bonus_id   String @id @unique @default(uuid())
+  payroll_id String @unique
+
+  bonus_status PAID_STATUS
+  bonus_date   DateTime
+  bonus_type   String
+
+  bonus_amount  Int
+  currency_type String
+
+  payroll Payroll @relation(fields: [payroll_id], references: [payroll_id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Bonus")
+}
+
+model SalaryStructure {
+  salary_id  String @id @unique @default(uuid())
+  payroll_id String
+
+  from_date DateTime?
+  end_date  DateTime?
+
+  base_salary_amount    Int
+  ot_hours_amount       Int?
+  currency_type         String
+  generated_salary_slip Boolean     @default(false)
+
+  earnings              Json[]
+  incentive             Json[]
+  deduction             Json[]
+  paid_leave_encashment Int
+  payroll               Payroll @relation(fields: [payroll_id], references: [payroll_id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Salary")
+}
+
+model SalarySlip {
+  salary_slip_id String  @id @unique @default(uuid())
+  payroll_id     String
+  salary_id      String?
+  company_history_id    String[]
+
+  salary_slip_approval SALARY_SLIP_APPROVAL
+  salary_slip_status   PAID_STATUS
+
+  salary_slip_from_date DateTime
+  salary_slip_to_date   DateTime
+  currency_type         String
+  salary_slip_freq      PAYROLL_FREQUENCY  @default(Monthly)
+
+  working_days         Int
+  ot_hours             Int
+  paid_leave_days      Int
+  holidays             Int
+  leave_days           Int
+  base_salary          Int
+  complementary_leaves_days Int  @default(0)
+  extra_complementary_leave_hours Int  @default(0)
+  earnings             Json[]
+  incentive            Json[]
+  deduction            Json[]
+  bonuses              Json[]
+  complementary_leaves Complementary_Leave[]
+
+  salary_slip_total_earning   Int
+  salary_slip_total_incentive Int
+  salary_slip_total_deduction Int
+  salary_slip_total_amount    Int
+
+  payroll Payroll @relation(fields: [payroll_id], references: [payroll_id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("SalarySlip")
+}
+
+model Remark {
+  remark_id String @id @unique @default(uuid())
+  user_id   String
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  remark_date DateTime?
+
+  remark_title       String?
+  remark_description String?
+  remark_level       Int?
+  remark_type        REMARK_TYPE
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Remark")
+}
+
+model Requests {
+  request_id String @id @unique @default(uuid())
+  user_id   String
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  request_date DateTime?
+  
+  checkin_time DateTime?
+  checkout_time DateTime?
+
+  request_title       String?
+  request_description String?
+  request_type        REQUEST_TYPE
+  request_status      REQUEST_STATUS  @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Requests")
+}
+model Tickets {
+  ticket_id String @id @unique @default(uuid())
+  user_id   String
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  ticket_date DateTime?
+
+  ticket_title       String?
+  ticket_description String?
+  ticket_type        TICKET_TYPE
+  ticket_status      REQUEST_STATUS  @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Tickets")
+}
+
+model companyTemplate {
+  template_id String @id @unique @default(uuid())
+
+  template_name         String
+  template_description  String?
+  template_content      String?
+  template_content_html String?
+  predefined_variables  String[]
+  custom_variables      String[]
+  variable_scopes       String[]
+  user_letter           userDocs[]
+  require_sign          Boolean    @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("CompanyTemplate")
+}
+
+model userDocs {
+  usrdoc_id   String @id @unique @default(uuid())
+  user_id     String
+  template_id String
+
+  user     User            @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  template companyTemplate @relation(fields: [template_id], references: [template_id], onDelete: Cascade)
+
+  usrdoc_title          String
+  usrdoc_description    String?
+  usrdoc_variables_data Json?
+  usrdoc_pdf_url        String?
+  usrdoc_status         DOCS_STATUS_TYPE
+
+  signedAt DateTime?
+  user_ip  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Logger {
+  logger_id          String             @id @unique @default(uuid())
+  log_type           EVENT_LOG_TYPE
+  log_attrib_name    String
+  additional_details Json?
+  actionName         String?
+  attrib_id          String[]
+  user_id            String
+  text_info          String?
+  updateData         Json?
+  previousData       Json?
+  Entity_name        LOGGER_ENTITY_TYPE
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Logger")
+}
+
+model Notification {
+  notification_id     String              @id @unique @default(uuid())
+  user_id             String
+  title               String
+  description         String?
+  notification_type   NOTIFICATION_TYPE
+  notification_status NOTIFICATION_STATUS
+  user                User                @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Notification")
+}
+
+enum REMARK_TYPE {
+  PERFORMANCE
+  CONFLICT
+}
+
+enum REQUEST_TYPE  {
+  ATTENDANCE_CORRECTION
+  COMPLAINT
+}
+
+enum TICKET_TYPE  {
+  COMPLAINT
+}
+
+enum DOCS_STATUS_TYPE {
+  PENDING
+  SIGNED
+  APPROVED
+  REJECTED
+}
+
+enum OT_PAY_TYPE {
+  COMPUNSATORY_OFF
+  PAY_IN_SALARY
+}
+
+enum NOTIFICATION_TYPE {
+  Shift
+  Leave
+  Attendance
+  Payroll
+  Letter
+  Requests
+  Tickets
+}
+
+enum NOTIFICATION_STATUS {
+  Pending
+  Read
+}
+
+enum EVENT_LOG_TYPE {
+  Create
+  Read
+  Update
+  Delete
+}
+
+enum SALARY_TYPE {
+  Hourly
+  Daily
+  Monthly
+}
+
+enum SALARY_SLIP_APPROVAL {
+  Pending
+  Approved
+  Rejected
+}
+
+enum PAID_STATUS {
+  Pending
+  Paid
+  Cancelled
+}
+
+enum PAYROLL_STATUS {
+  Active
+  Inactive
+}
+
+enum PAYROLL_FREQUENCY {
+  Weekly
+  Monthly
+  Hourly
+  Daily
+}
+
+enum USER_SHIFT_STATUS {
+  Leave_Conflict
+  Late_Conflict
+  Overlap_Conflict
+  None
+}
+
+enum SHIFT_REPEAT {
+  None
+  Daily
+  Weekly
+  Monthly
+  Custom
+}
+
+enum SHIFT_STATUS {
+  Unexpected
+  Conflicted
+  Resolved
+}
+
+enum GENDER {
+  Male
+  Female
+  Other
+}
+
+enum SALUTAION {
+  Mr
+  Mrs
+  Ms
+  Dr
+}
+
+enum EMPLOYEMENT_TYPE {
+  Full_Time
+  Part_Time
+  Contract
+  Internship
+}
+
+enum HOLIDAY_TYPE {
+  HOLIDAY
+  WEEKOFF
+  WEEKOFF_NON_REPEAT
+}
+
+enum LEAVE_TYPE {
+  SICK
+  EARNED
+  CASUAL
+  COMPUNSATORY
+  UNPAID
+}
+
+enum LEAVE_STATUS {
+  PENDING
+  APPROVED
+  REJECTED
+  REFUNDED
+  LAPSED
+  GRANTED
+}
+
+enum REQUEST_STATUS {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+
+enum TRANS_STATUS {
+  CREDIT
+  DEBIT
+}
+
+enum LOG_TYPE {
+  IN
+  OUT
+}
+
+enum ATTENDANCE_TYPE {
+  ABSENT
+  PRESENT
+  HALF_DAY
+  SICK
+  EARNED
+  CASUAL
+  COMPUNSATORY
+  UNPAID
+  HOLIDAY
+  WEEKOFF
+  OVER_TIME
+}
+
+enum STATUS_TYPE {
+  Active
+  Inactive
+  Suspended
+  Left
+}
+
+enum LOGGER_ENTITY_TYPE {
+  SHIFT
+  ATTENDANCE
+  HOLIDAY
+  PAYROLL
+  LEAVE
+}

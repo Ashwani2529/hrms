@@ -1,0 +1,213 @@
+/* @import "./fonts/source-sans-pro-lato.css"; */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap');
+
+a {
+    color: #007ee6;
+    text-decoration: none;
+}
+
+.dont-break-out {
+    /* These are technically the same, but use both */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    -ms-word-break: break-all;
+    /* This is the dangerous one in WebKit, as it breaks things wherever */
+    word-break: break-all;
+    /* Instead use this non-standard one: */
+    word-break: break-word;
+
+    /* Adds a hyphen where the word breaks, if supported (No Blink) */
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+.slip-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rupee-lg {
+    display: inline-block;
+    width: 18px;
+    height: 25px;
+    background-position: left;
+    background-image: url('http://i.imgur.com/Fd7NROx.png');
+    background-repeat: no-repeat;
+    padding-right: 5px;
+    background-size: auto auto;
+}
+
+.rupee-sm {
+    display: inline-block;
+    width: 11px;
+    height: 12px;
+    background-image: url('http://i.imgur.com/Fd7NROx.png');
+    background-repeat: no-repeat;
+    background-position: left;
+    background-size: 10px 12px;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .page-break-inside-avoid {
+        page-break-inside: avoid;
+    }
+
+    .page-break-before-auto {
+        page-break-before: auto;
+    }
+
+    .page-break-after-auto {
+        page-break-after: auto;
+    }
+}
+
+body {
+    width: 100% !important;
+    margin: 0;
+    padding: 0;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    background-color: #fff;
+}
+
+.payslip-box {
+    max-width: 1200px;
+    background-color: #fff;
+    margin: auto;
+    padding: 30px;
+    font-size: 14px;
+    color: black;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table,
+th,
+td {
+    text-align: left;
+    padding: 15px;
+}
+
+table.table th,
+table.table td {
+    padding: 18px;
+}
+
+table.table th {
+    font-weight: 600;
+    font-size: 16px;
+    border-top: 2px solid #cfcfcf;
+    border-bottom: 2px solid #cfcfcf;
+}
+
+table.table tfoot td {
+    font-weight: 600;
+    border-top: 2px solid #cfcfcf;
+}
+
+/* img {
+  width: 70px;
+  height: 70px;
+} */
+
+.company-icon {
+    vertical-align: super;
+}
+
+.border-bottom {
+    border-bottom: 2px solid #cfcfcf;
+}
+
+.mb-5 {
+    margin-bottom: 5px;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.mr-5 {
+    margin-right: 5px;
+}
+
+.pt-0 {
+    padding-top: 0;
+}
+
+.pb-0 {
+    padding-bottom: 0;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.valign-bottom {
+    vertical-align: bottom;
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.font-16 {
+    font-size: 16px;
+}
+
+.font-18 {
+    font-size: 18px;
+}
+
+.font-20 {
+    font-size: 20px;
+}
+
+.font-22 {
+    font-size: 22px;
+}
+
+.font-38 {
+    font-size: 38px;
+}
+
+.table th:not(:first-child),
+.table td:not(:first-child) {
+    text-align: right;
+}
+
+.table th:nth-child(4),
+.table td:nth-child(4) {
+    text-align: left;
+}
+
+.net-payable {
+    background-color: #f3f8ff;
+    text-align: center;
+}
+
+.net-payable .text {
+    padding-right: 5px;
+    font-size: 28px;
+    vertical-align: middle;
+}
+
+.net-payable .calculation-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6e6f70;
+}
+
+.flex {
+    display: flex;
+}

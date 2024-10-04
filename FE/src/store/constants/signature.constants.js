@@ -1,0 +1,5 @@
+export const SIGNATURE_MODES = {
+    FREESTYLE: 'FREESTYLE',
+    PREDEFINED: 'PREDEFINED',
+    UPLOAD: 'UPLOAD'
+};

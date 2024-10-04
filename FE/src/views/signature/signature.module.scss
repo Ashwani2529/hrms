@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Birthstone+Bounce:wght@400;500&family=Caveat:wght@400..700&family=Dancing+Script:wght@400..700&family=Macondo&family=Mrs+Saint+Delafield&family=Rock+Salt&family=Sacramento&family=Salsa&family=Sevillana&family=Tangerine:wght@400;700&display=swap');
+
+.signature_container {
+    width: 100%;
+    min-width: 320px;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    transform: scale(0.9);
+}
+
+.signature {
+    font-size: 3rem;
+    padding-left: 5px;
+    padding-right: 5px;
+    line-height: 100%;
+}
+
+.dancing_script {
+    font-family: 'Dancing Script', cursive;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+.caveat {
+    font-family: 'Caveat', cursive;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+.sevillana {
+    font-family: 'Sevillana', cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.salsa {
+    font-family: 'Salsa', cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.mrsSaint {
+    font-family: 'Mrs Saint Delafield', cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.rockSalt {
+    font-family: 'Rock Salt', cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.tangerine {
+    font-family: 'Tangerine', cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.macondo {
+    font-family: 'Macondo', cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.sacramento {
+    font-family: 'Sacramento', cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.birthstone_bounce {
+    font-family: 'Birthstone Bounce', cursive;
+    font-weight: 400;
+    font-style: normal;
+}

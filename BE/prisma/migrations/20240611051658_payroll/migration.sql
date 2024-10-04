@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "PAYROLL_FREQUENCY" ADD VALUE 'Daily';

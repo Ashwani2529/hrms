@@ -1,0 +1,9 @@
+-- CreateEnum
+CREATE TYPE "TRANS_STATUS" AS ENUM ('CREDIT', 'DEBIT');
+
+-- AlterTable
+ALTER TABLE "Leave" ADD COLUMN     "trans_status" "TRANS_STATUS" NOT NULL DEFAULT 'DEBIT',
+ALTER COLUMN "leave_type" DROP NOT NULL,
+ALTER COLUMN "leave_status" DROP NOT NULL,
+ALTER COLUMN "leave_start_date" DROP NOT NULL,
+ALTER COLUMN "leave_end_date" DROP NOT NULL;

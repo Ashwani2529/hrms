@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "assets": ["**/*.pug", "**/*.hbs","**/*.css", "public"],
+    "deleteOutDir": true,
+    "builder" : "tsc",
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "classValidatorShim": false,
+          "introspectComments": true
+        }
+      }
+    ]
+  }
+}

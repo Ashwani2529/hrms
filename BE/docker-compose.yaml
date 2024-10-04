@@ -1,0 +1,49 @@
+version: '3.3'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: datespec_postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=blade
+      - POSTGRES_DB=hrmsdb
+    networks:
+      - my_network
+  backend:
+    image: shreyasheliverse/hrms:latest
+    container_name: hrms_backend
+    ports:
+      - "3000:3000"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres 
+    networks:
+      - my_network
+    restart: on-failure
+  prisma:
+    image: node:18-slim
+    container_name: prisma_studio
+    ports:
+    - "5555:5555"
+    depends_on:
+      - postgres
+    networks:
+      - my_network
+    build:
+      context: .
+      dockerfile: ./docker/prisma/Dockerfile
+    restart: on-failure
+
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
